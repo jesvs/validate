@@ -224,13 +224,22 @@ func (t *Translator) format(validator, field string, args ...interface{}) (msg s
 	key := field + "." + validator
 
 	if msg, ok = t.messages[key]; ok { // "field.required"
-		n := strings.Count(msg, "%s")
+		n := countVerbs(msg)
 		msg = fmt.Sprintf(msg, args[:n]...)
 	} else if msg, ok = t.messages[validator]; ok { // "required"
-		n := strings.Count(msg, "%s")
+		n := countVerbs(msg)
 		msg = fmt.Sprintf(msg, args[:n]...)
 	}
 
 	return
 }
 
+func countVerbs(msg string) int {
+	n := 0
+	verbs := []string{"%s", "%d", "%v"}
+	for _, v := range verbs {
+		n += strings.Count(msg, v)
+	}
+
+	return n
+}
